@@ -1,4 +1,7 @@
 ﻿using System;
+
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -282,6 +285,26 @@ namespace UniverseLib.UI
             return textComp;
         }
 
+        public static TMP_Text CreateTMPLabel(
+            GameObject parent,
+            string name,
+            string defaultText,
+            TextAlignmentOptions alignment = TextAlignmentOptions.Left,
+            Color color = default,
+            bool supportRichText = true,
+            float fontSize = 14f) {
+          GameObject obj = CreateUIObject(name, parent);
+          TextMeshProUGUI tmpComp = obj.AddComponent<TextMeshProUGUI>();
+          tmpComp.font = UniversalUI.DefaultTMPFont;
+          tmpComp.text = defaultText;
+          tmpComp.color = color == default ? defaultTextColor : color;
+          tmpComp.alignment = alignment;
+          tmpComp.fontSize = fontSize;
+          tmpComp.richText = supportRichText;
+          tmpComp.enableAutoSizing = false;
+          return tmpComp;
+        }
+
         /// <summary>
         /// Create a ButtonRef wrapper and a Button component, providing only the default Color (highlighted and pressed colors generated automatically).
         /// </summary>
@@ -322,10 +345,13 @@ namespace UniverseLib.UI
             colors.colorMultiplier = 1;
             RuntimeHelper.Instance.Internal_SetColorBlock(button, colors);
 
-            Text textComp = textObj.AddComponent<Text>();
+            TextMeshProUGUI textComp = textObj.AddComponent<TextMeshProUGUI>();
+            textComp.font = UniversalUI.DefaultTMPFont;
             textComp.text = text;
-            SetDefaultTextValues(textComp);
-            textComp.alignment = TextAnchor.MiddleCenter;
+            textComp.color = defaultTextColor;
+            textComp.alignment = TextAlignmentOptions.Center;
+            textComp.enableAutoSizing = false;
+            textComp.fontSize = 14f;
 
             RectTransform rect = textObj.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
@@ -502,6 +528,59 @@ namespace UniverseLib.UI
             return toggleObj;
         }
 
+        public static GameObject CreateTMPToggle(
+            GameObject parent,
+            string name,
+            out Toggle toggle,
+            out TMP_Text tmpText,
+            Color bgColor = default,
+            int checkWidth = 20,
+            int checkHeight = 20) {
+          // Main obj
+          GameObject toggleObj = CreateUIObject(name, parent, smallElementSize);
+          SetLayoutGroup<HorizontalLayoutGroup>(toggleObj, false, false, true, true, 5, 0,0,0,0, childAlignment: TextAnchor.MiddleLeft);
+          toggle = toggleObj.AddComponent<Toggle>();
+          toggle.isOn = true;
+          SetDefaultSelectableValues(toggle);
+          // need a second reference so we can use it inside the lambda, since 'toggle' is an out var.
+          Toggle t2 = toggle;
+          toggle.onValueChanged.AddListener((bool _) => { t2.OnDeselect(null); });
+
+          // Check mark background
+
+          GameObject checkBgObj = CreateUIObject("Background", toggleObj);
+          Image bgImage = checkBgObj.AddComponent<Image>();
+          bgImage.color = bgColor == default ? new Color(0.04f, 0.04f, 0.04f, 0.75f) : bgColor;
+
+          SetLayoutGroup<HorizontalLayoutGroup>(checkBgObj, true, true, true, true, 0, 2, 2, 2, 2);
+          SetLayoutElement(checkBgObj, minWidth: checkWidth, flexibleWidth: 0, minHeight: checkHeight, flexibleHeight: 0);
+
+          // Check mark image
+
+          GameObject checkMarkObj = CreateUIObject("Checkmark", checkBgObj);
+          Image checkImage = checkMarkObj.AddComponent<Image>();
+          checkImage.color = new Color(0.8f, 1, 0.8f, 0.3f);
+
+          // Label 
+          GameObject labelObj = CreateUIObject(name, parent);
+          tmpText = labelObj.AddComponent<TextMeshProUGUI>();
+          tmpText.font = UniversalUI.DefaultTMPFont;
+          tmpText.text = string.Empty;
+          tmpText.color = defaultTextColor;
+          tmpText.alignment = TextAlignmentOptions.Left;
+          tmpText.fontSize = 14f;
+          tmpText.enableAutoSizing = false;
+
+          SetLayoutElement(labelObj, minWidth: 0, flexibleWidth: 0, minHeight: checkHeight, flexibleHeight: 0);
+
+          // References
+
+          toggle.graphic = checkImage;
+          toggle.targetGraphic = bgImage;
+
+          return toggleObj;
+        }
+
         /// <summary>
         /// Create a standard InputField control and an InputFieldRef wrapper for it.
         /// </summary>
@@ -651,7 +730,7 @@ namespace UniverseLib.UI
             scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
             scrollRect.verticalScrollbarSpacing = -3f;
 
-            viewportObj.AddComponent<Mask>().showMaskGraphic = false;
+            viewportObj.AddComponent<RectMask2D>();
 
             Image viewportImage = viewportObj.AddComponent<Image>();
             viewportImage.type = Image.Type.Sliced;
@@ -762,7 +841,6 @@ namespace UniverseLib.UI
             viewportRect.offsetMax = new Vector2(-10.0f, 0.0f);
             viewportObj.AddComponent<RectMask2D>();
             viewportObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
-            viewportObj.AddComponent<Mask>();
 
             content = CreateUIObject("Content", viewportObj);
             RectTransform contentRect = content.GetComponent<RectTransform>();
@@ -791,7 +869,7 @@ namespace UniverseLib.UI
             GameObject sliderContainer = CreateVerticalGroup(mainObj, "SliderContainer",
                 false, false, true, true, 0, default, new Color(0.05f, 0.05f, 0.05f));
             SetLayoutElement(sliderContainer, minWidth: 25, flexibleWidth: 0, flexibleHeight: 9999);
-            sliderContainer.AddComponent<Mask>().showMaskGraphic = false;
+            sliderContainer.AddComponent<RectMask2D>();
 
             CreateSliderScrollbar(sliderContainer, out Slider slider);
 
@@ -816,7 +894,7 @@ namespace UniverseLib.UI
         public static GameObject CreateSliderScrollbar(GameObject parent, out Slider slider)
         {
             GameObject mainObj = CreateUIObject("SliderScrollbar", parent, smallElementSize);
-            mainObj.AddComponent<Mask>().showMaskGraphic = false;
+            mainObj.AddComponent<RectMask2D>();
             mainObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
 
             GameObject bgImageObj = CreateUIObject("Background", mainObj);
@@ -827,7 +905,7 @@ namespace UniverseLib.UI
             bgImage.type = Image.Type.Sliced;
             bgImage.color = new Color(0.05f, 0.05f, 0.05f, 1.0f);
 
-            bgImageObj.AddComponent<Mask>();
+            bgImageObj.AddComponent<RectMask2D>();
 
             RectTransform bgRect = bgImageObj.GetComponent<RectTransform>();
             bgRect.pivot = new Vector2(0, 1);
@@ -899,7 +977,7 @@ namespace UniverseLib.UI
             viewportRect.pivot = new Vector2(0.0f, 1.0f);
             viewportRect.offsetMax = new Vector2(-28, 0);
             viewportObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
-            viewportObj.AddComponent<Mask>().showMaskGraphic = false;
+            viewportObj.AddComponent<RectMask2D>();
 
             content = CreateUIObject("Content", viewportObj);
             SetLayoutGroup<VerticalLayoutGroup>(content, true, false, true, true, childAlignment: TextAnchor.UpperLeft);
@@ -919,7 +997,7 @@ namespace UniverseLib.UI
             scrollBarRect.offsetMin = new Vector2(-25, 0);
             SetLayoutGroup<VerticalLayoutGroup>(scrollBarObj, false, true, true, true);
             scrollBarObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
-            scrollBarObj.AddComponent<Mask>().showMaskGraphic = false;
+            scrollBarObj.AddComponent<RectMask2D>();
 
             GameObject hiddenBar = CreateScrollbar(scrollBarObj, "HiddenScrollviewScroller", out Scrollbar hiddenScrollbar);
             hiddenScrollbar.SetDirection(Scrollbar.Direction.BottomToTop, true);
@@ -981,7 +1059,7 @@ namespace UniverseLib.UI
             viewportRect.anchorMax = Vector2.one;
             viewportRect.pivot = new Vector2(0.0f, 1.0f);
             viewportObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
-            viewportObj.AddComponent<Mask>().showMaskGraphic = false;
+            viewportObj.AddComponent<RectMask2D>();
 
             // Input Field
 
@@ -1014,7 +1092,7 @@ namespace UniverseLib.UI
             SetLayoutGroup<VerticalLayoutGroup>(scrollBarObj, true, true, true, true);
             SetLayoutElement(scrollBarObj, minWidth: 25, flexibleWidth: 0, flexibleHeight: 9999);
             scrollBarObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
-            scrollBarObj.AddComponent<Mask>().showMaskGraphic = false;
+            scrollBarObj.AddComponent<RectMask2D>();
 
             GameObject hiddenBar = CreateScrollbar(scrollBarObj, "HiddenScrollviewScroller", out Scrollbar hiddenScrollbar);
             hiddenScrollbar.SetDirection(Scrollbar.Direction.BottomToTop, true);

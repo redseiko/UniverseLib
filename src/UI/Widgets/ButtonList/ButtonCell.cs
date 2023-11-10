@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using TMPro;
+
 using UnityEngine;
-using UnityEngine.UI;
+
 using UniverseLib.UI.Models;
 using UniverseLib.UI.Widgets.ScrollView;
 
@@ -43,9 +43,9 @@ namespace UniverseLib.UI.Widgets.ButtonList
 
             this.Button = UIFactory.CreateButton(UIRoot, "NameButton", "Name");
             UIFactory.SetLayoutElement(Button.Component.gameObject, flexibleWidth: 9999, minHeight: 25, flexibleHeight: 0);
-            Text buttonText = Button.Component.GetComponentInChildren<Text>();
-            buttonText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            buttonText.alignment = TextAnchor.MiddleLeft;
+            TMP_Text buttonText = Button.ButtonText;
+            buttonText.textWrappingMode = TextWrappingModes.NoWrap;
+            buttonText.alignment = TextAlignmentOptions.Left;
 
             Color normal = new(0.11f, 0.11f, 0.11f);
             Color highlight = new(0.16f, 0.16f, 0.16f);

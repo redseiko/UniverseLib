@@ -17,10 +17,10 @@ namespace UniverseLib.Utility
     {
         internal static Dictionary<string, MethodInfo> toStringMethods = new();
 
-        private const string nullString = "<color=grey>null</color>";
+        private const string nullString = "<color=#9F9F9F>null</color>";
         private const string nullUnknown = nullString + " (?)";
         private const string destroyedString = "<color=red>Destroyed</color>";
-        private const string untitledString = "<i><color=grey>untitled</color></i>";
+        private const string untitledString = "<i><color=#9F9F9F>untitled</color></i>";
 
         private const string eventSystemNamespace = "UnityEngine.EventSystem";
 

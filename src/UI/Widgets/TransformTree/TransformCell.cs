@@ -63,7 +63,7 @@ namespace UniverseLib.UI.Widgets
             {
                 string name = cached.Value.name?.Trim();
                 if (string.IsNullOrEmpty(name))
-                    name = "<i><color=grey>untitled</color></i>";
+                    name = "<i><color=#9F9F9F>untitled</color></i>";
                 NameButton.ButtonText.text = name;
                 NameButton.ButtonText.color = cached.Value.gameObject.activeSelf ? Color.white : Color.grey;
 
@@ -81,7 +81,7 @@ namespace UniverseLib.UI.Widgets
                 int childCount = cached.Value.childCount;
                 if (childCount > 0)
                 {
-                    NameButton.ButtonText.text = $"<color=grey>[{childCount}]</color> {NameButton.ButtonText.text}";
+                    NameButton.ButtonText.text = $"<color=#9F9F9F>[{childCount}]</color> {NameButton.ButtonText.text}";
 
                     ExpandButton.Component.interactable = true;
                     ExpandButton.ButtonText.text = cached.Expanded ? "▼" : "►";
@@ -163,13 +163,12 @@ namespace UniverseLib.UI.Widgets
             GameObject nameBtnHolder = UIFactory.CreateHorizontalGroup(this.UIRoot, "NameButtonHolder",
                 false, false, true, true, childAlignment: TextAnchor.MiddleLeft);
             UIFactory.SetLayoutElement(nameBtnHolder, flexibleWidth: 9999, minHeight: 25, flexibleHeight: 0);
-            nameBtnHolder.AddComponent<Mask>().showMaskGraphic = false;
+            nameBtnHolder.AddComponent<RectMask2D>();
 
             NameButton = UIFactory.CreateButton(nameBtnHolder, "NameButton", "Name", null);
             UIFactory.SetLayoutElement(NameButton.Component.gameObject, flexibleWidth: 9999, minHeight: 25, flexibleHeight: 0);
-            Text nameLabel = NameButton.Component.GetComponentInChildren<Text>();
-            nameLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
-            nameLabel.alignment = TextAnchor.MiddleLeft;
+            NameButton.ButtonText.textWrappingMode = TMPro.TextWrappingModes.Normal;
+            NameButton.ButtonText.alignment = TMPro.TextAlignmentOptions.Left;
 
             // Sibling index input
 

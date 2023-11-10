@@ -1,24 +1,25 @@
-﻿using HarmonyLib;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+
+using HarmonyLib;
+
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UniverseLib.Config;
+
 using UniverseLib.Input;
 using UniverseLib.UI.Models;
 using UniverseLib.UI.Panels;
 using UniverseLib.Utility;
 
-namespace UniverseLib.UI
-{
-    /// <summary>Handles all <see cref="UIBase"/> UIs on the UniverseLib UI canvas.</summary>
-    public static class UniversalUI
+namespace UniverseLib.UI {
+  /// <summary>Handles all <see cref="UIBase"/> UIs on the UniverseLib UI canvas.</summary>
+  public static class UniversalUI
     {
         internal static readonly Dictionary<string, UIBase> registeredUIs = new();
         internal static readonly List<UIBase> uiBases = new();
@@ -43,6 +44,8 @@ namespace UniverseLib.UI
 
         /// <summary>The default font asset.</summary>
         public static Font DefaultFont { get; private set; }
+
+        public static TMP_FontAsset DefaultTMPFont { get; private set; }
 
         /// <summary>The backup UI shader, if it was loaded.</summary>
         public static Shader BackupShader { get; private set; }
@@ -229,6 +232,11 @@ namespace UniverseLib.UI
             DefaultFont = UIBundle.LoadAsset<Font>("arial");
             DefaultFont.hideFlags = HideFlags.HideAndDontSave;
             UnityEngine.Object.DontDestroyOnLoad(DefaultFont);
+
+            DefaultTMPFont = TMP_FontAsset.CreateFontAsset(DefaultFont);
+            DefaultTMPFont.name = $"{DefaultFont.name}-TMP";
+            DefaultTMPFont.hideFlags = HideFlags.HideAndDontSave;
+            UnityEngine.Object.DontDestroyOnLoad(DefaultTMPFont);
 
             BackupShader = UIBundle.LoadAsset<Shader>("DefaultUI");
             BackupShader.hideFlags = HideFlags.HideAndDontSave;

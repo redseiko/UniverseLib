@@ -54,7 +54,7 @@ namespace UniverseLib.UI.Widgets.ScrollView
         internal float PrototypeHeight => _protoHeight ?? (float)(_protoHeight = Pool<T>.Instance.DefaultHeight);
         internal float? _protoHeight;
 
-        internal int ExtraPoolCells => 10;
+        internal int ExtraPoolCells => 2;
         internal float RecycleThreshold => PrototypeHeight * ExtraPoolCells;
         internal float HalfThreshold => RecycleThreshold * 0.5f;
 

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,7 +25,7 @@ namespace UniverseLib.UI.Models
         /// <summary>
         /// The Text component on the button.
         /// </summary>
-        public Text ButtonText { get; }
+        public TMP_Text ButtonText { get; }
 
         /// <summary>
         /// The GameObject this Button is attached to.
@@ -49,7 +49,7 @@ namespace UniverseLib.UI.Models
         public ButtonRef(Button button)
         {
             this.Component = button;
-            this.ButtonText = button.GetComponentInChildren<Text>();
+            this.ButtonText = button.GetComponentInChildren<TMP_Text>();
 
             button.onClick.AddListener(() => { OnClick?.Invoke(); });
         }

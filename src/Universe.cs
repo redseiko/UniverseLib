@@ -1,20 +1,16 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
+
+using HarmonyLib;
+
 using UnityEngine;
+
 using UniverseLib.Config;
 using UniverseLib.Input;
 using UniverseLib.Runtime;
 using UniverseLib.UI;
-
-#if IL2CPP
-using Il2CppInterop.Runtime;
-using IL2CPPUtils = Il2CppInterop.Common.Il2CppInteropUtils;
-#endif
 
 namespace UniverseLib
 {
@@ -28,17 +24,13 @@ namespace UniverseLib
         }
 
         public const string NAME = "UniverseLib";
-        public const string VERSION = "2.0.0";
+        public const string VERSION = "2.0.1";
         public const string AUTHOR = "rainbowblood666";
         public const string GUID = "rainbowblood.universelib";
 
         /// <summary>The current runtime context (Mono or IL2CPP).</summary>
         public static RuntimeContext Context { get; } =
-#if MONO
             RuntimeContext.Mono;
-#else
-            RuntimeContext.IL2CPP;
-#endif
 
         /// <summary>The current setup state of UniverseLib.</summary>
         public static GlobalState CurrentGlobalState { get; private set; }
@@ -193,16 +185,6 @@ namespace UniverseLib
                     // LogWarning($"\t Couldn't find any method on type {type.FullName} called {methodName}!");
                     return false;
                 }
-
-#if IL2CPP
-                // if this is an IL2CPP type, ensure method wasn't stripped.
-                if (Il2CppType.From(type, false) != null
-                    && IL2CPPUtils.GetIl2CppMethodInfoPointerFieldForGeneratedMethod(target) == null)
-                {
-                    Log($"\t IL2CPP method has no corresponding pointer, aborting patch of {type.FullName}.{methodName}");
-                    return false;
-                }
-#endif
 
                 PatchProcessor processor = Harmony.CreateProcessor(target);
 

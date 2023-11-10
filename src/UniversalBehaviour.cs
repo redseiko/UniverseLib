@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using Il2CppInterop.Runtime.Injection;
+﻿using UnityEngine;
 
 namespace UniverseLib
 {
     /// <summary>
     /// Used for receiving Update events and starting Coroutines.
     /// </summary>
-    internal class UniversalBehaviour : MonoBehaviour
+    internal class UniversalBehaviour : UnityEngine.MonoBehaviour
     {
         internal static UniversalBehaviour Instance { get; private set; }
 
         internal static void Setup()
         {
-#if IL2CPP
-            ClassInjector.RegisterTypeInIl2Cpp<UniversalBehaviour>();
-#endif
 
             GameObject obj = new("UniverseLibBehaviour");
             GameObject.DontDestroyOnLoad(obj);
@@ -30,31 +22,5 @@ namespace UniverseLib
         {
             Universe.Update();
         }
-
-#if IL2CPP
-        public UniversalBehaviour(IntPtr ptr) : base(ptr) { }
-
-        static Delegate queuedDelegate;
-
-        internal static void InvokeDelegate(Delegate method)
-        {
-            queuedDelegate = method;
-            Instance.Invoke(nameof(InvokeQueuedAction), 0f);
-        }
-
-        void InvokeQueuedAction()
-        {
-            try
-            {
-                Delegate method = queuedDelegate;
-                queuedDelegate = null;
-                method?.DynamicInvoke();
-            }
-            catch (Exception ex)
-            {
-                Universe.LogWarning($"Exception invoking action from IL2CPP thread: {ex}");
-            }
-        }
-#endif
     }
 }
