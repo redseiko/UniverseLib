@@ -96,19 +96,12 @@ namespace UniverseLib.UI.Widgets
             updateWanted = true;
         }
 
-        internal void ProcessInputText()
-        {
-            Rect curInputRect = InputField.Component.textComponent.rectTransform.rect;
-            float scaleFactor = RootScaler.scaleFactor;
+        internal void ProcessInputText() {
+          Rect curInputRect = InputField.Component.textComponent.rectTransform.rect;
 
-            // Current text settings
-            TextGenerationSettings texGenSettings = InputField.Component.textComponent.GetGenerationSettings(curInputRect.size);
-            texGenSettings.generateOutOfBounds = false;
-            texGenSettings.scaleFactor = scaleFactor;
-
-            // Preferred text rect height
-            TextGenerator textGen = InputField.Component.textComponent.cachedTextGeneratorForLayout;
-            desiredContentHeight = textGen.GetPreferredHeight(lastText, texGenSettings) + 10;
+          desiredContentHeight =
+              InputField.Component.textComponent.GetPreferredValues(lastText, curInputRect.width, curInputRect.height).y
+                  + 10f;
         }
 
         public override void ConstructUI(GameObject parent)

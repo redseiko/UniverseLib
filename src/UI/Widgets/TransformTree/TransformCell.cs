@@ -174,11 +174,11 @@ namespace UniverseLib.UI.Widgets
 
             SiblingIndex = UIFactory.CreateInputField(this.UIRoot, "SiblingIndexInput", string.Empty);
             SiblingIndex.Component.textComponent.fontSize = 11;
-            SiblingIndex.Component.textComponent.alignment = TextAnchor.MiddleRight;
+            SiblingIndex.Component.textComponent.alignment = TMPro.TextAlignmentOptions.Right;
             Image siblingImage = SiblingIndex.GameObject.GetComponent<Image>();
             siblingImage.color = new(0f, 0f, 0f, 0.25f);
             UIFactory.SetLayoutElement(SiblingIndex.GameObject, 35, 20, 0, 0);
-            SiblingIndex.Component.GetOnEndEdit().AddListener(OnSiblingIndexEndEdit);
+            SiblingIndex.Component.onEndEdit.AddListener(OnSiblingIndexEndEdit);
 
             // Setup selectables
 

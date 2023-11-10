@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,12 +41,12 @@ namespace UniverseLib.UI.Models
         /// <summary>
         /// The actual InputField component which this object is a reference to.
         /// </summary>
-        public InputField Component { get; }
+        public TMP_InputField Component { get; }
 
         /// <summary>
         /// The placeholder Text component.
         /// </summary>
-        public Text PlaceholderText { get; }
+        public TMP_Text PlaceholderText { get; }
 
         /// <summary>
         /// The GameObject which the InputField is attached to.
@@ -69,21 +72,11 @@ namespace UniverseLib.UI.Models
             set => Component.text = value;
         }
 
-        /// <summary>
-        /// A reference to the InputField's cachedInputTextGenerator.
-        /// </summary>
-        public TextGenerator TextGenerator => Component.cachedInputTextGenerator;
-        
-        /// <summary>
-        /// Returns true if the InputField's vertex count has reached the <see cref="UniversalUI.MAX_TEXT_VERTS"/> limit.
-        /// </summary>
-        public bool ReachedMaxVerts => TextGenerator.vertexCount >= UniversalUI.MAX_TEXT_VERTS;
-
-        public InputFieldRef(InputField component)
+        public InputFieldRef(TMP_InputField component)
         {
             this.Component = component;
             Transform = component.GetComponent<RectTransform>();
-            PlaceholderText = component.placeholder.TryCast<Text>();
+            PlaceholderText = component.placeholder.TryCast<TMP_Text>();
             component.onValueChanged.AddListener(OnInputChanged);
         }
 
