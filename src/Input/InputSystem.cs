@@ -8,7 +8,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UniverseLib.UI;
 using UniverseLib.Utility;
+
+#if IL2CPP
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+#endif
 
 namespace UniverseLib.Input
 {
