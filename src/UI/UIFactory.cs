@@ -2,6 +2,8 @@
 
 using System;
 
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,6 +51,12 @@ public static class UIFactory
         text.color = defaultTextColor;
         text.font = UniversalUI.DefaultFont;
         text.fontSize = 14;
+    }
+
+    internal static void SetDefaultTMPTextValues(TMP_Text text) {
+      text.color = defaultTextColor;
+      text.font = UniversalUI.DefaultTMPFont;
+      text.fontSize = 14f;
     }
 
     internal static void SetDefaultSelectableValues(Selectable selectable)
@@ -280,6 +288,28 @@ public static class UIFactory
         textComp.fontSize = fontSize;
 
         return textComp;
+    }
+
+    public static TMP_Text CreateTMPLabel(
+        GameObject parent,
+        string name,
+        string defaultText,
+        TextAlignmentOptions alignment = TextAlignmentOptions.Left,
+        Color color = default,
+        bool supportRichText = true,
+        float fontSize = 14f) {
+      GameObject obj = CreateUIObject(name, parent);
+      TMP_Text textComp = obj.AddComponent<TextMeshProUGUI>();
+
+      SetDefaultTMPTextValues(textComp);
+
+      textComp.text = defaultText;
+      textComp.color = color == default ? defaultTextColor : color;
+      textComp.richText = supportRichText;
+      textComp.alignment = alignment;
+      textComp.fontSize = fontSize;
+
+      return textComp;
     }
 
     /// <summary>
