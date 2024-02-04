@@ -64,8 +64,8 @@ public class TransformCell : ICell
             string name = cached.Value.name?.Trim();
             if (string.IsNullOrEmpty(name))
                 name = "<i><color=#808080FF>untitled</color></i>";
-            NameButton.ButtonText.text = name;
-            NameButton.ButtonText.color = cached.Value.gameObject.activeSelf ? Color.white : Color.grey;
+            NameButton.ButtonTMPText.text = name;
+            NameButton.ButtonTMPText.color = cached.Value.gameObject.activeSelf ? Color.white : Color.grey;
 
             EnabledToggle.Set(cached.Value.gameObject.activeSelf, false);
 
@@ -81,23 +81,23 @@ public class TransformCell : ICell
             int childCount = cached.Value.childCount;
             if (childCount > 0)
             {
-                NameButton.ButtonText.text = $"<color=#808080FF>[{childCount}]</color> {NameButton.ButtonText.text}";
+                NameButton.ButtonTMPText.text = $"<color=#808080FF>[{childCount}]</color> {NameButton.ButtonTMPText.text}";
 
                 ExpandButton.Component.interactable = true;
-                ExpandButton.ButtonText.text = cached.Expanded ? "▼" : "►";
-                ExpandButton.ButtonText.color = cached.Expanded ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.3f, 0.3f, 0.3f);
+                ExpandButton.ButtonTMPText.text = cached.Expanded ? "▼" : "►";
+                ExpandButton.ButtonTMPText.color = cached.Expanded ? new Color(0.5f, 0.5f, 0.5f) : new Color(0.3f, 0.3f, 0.3f);
             }
             else
             {
                 ExpandButton.Component.interactable = false;
-                ExpandButton.ButtonText.text = "▪";
-                ExpandButton.ButtonText.color = new Color(0.3f, 0.3f, 0.3f);
+                ExpandButton.ButtonTMPText.text = "▪";
+                ExpandButton.ButtonTMPText.color = new Color(0.3f, 0.3f, 0.3f);
             }
         }
         else
         {
-            NameButton.ButtonText.text = $"[Destroyed]";
-            NameButton.ButtonText.color = Color.red;
+            NameButton.ButtonTMPText.text = $"[Destroyed]";
+            NameButton.ButtonTMPText.color = Color.red;
 
             SiblingIndex.GameObject.SetActive(false);
         }
@@ -149,7 +149,7 @@ public class TransformCell : ICell
 
         // Expand arrow
 
-        ExpandButton = UIFactory.CreateButton(this.UIRoot, "ExpandButton", "►");
+        ExpandButton = UIFactory.CreateTMPButton(UIRoot, "ExpandButton", "►");
         UIFactory.SetLayoutElement(ExpandButton.Component.gameObject, minWidth: 15, flexibleWidth: 0, minHeight: 25, flexibleHeight: 0);
 
         // Enabled toggle
@@ -165,11 +165,10 @@ public class TransformCell : ICell
         UIFactory.SetLayoutElement(nameBtnHolder, flexibleWidth: 9999, minHeight: 25, flexibleHeight: 0);
         nameBtnHolder.AddComponent<RectMask2D>();
 
-        NameButton = UIFactory.CreateButton(nameBtnHolder, "NameButton", "Name", null);
+        NameButton = UIFactory.CreateTMPButton(nameBtnHolder, "NameButton", "Name");
         UIFactory.SetLayoutElement(NameButton.Component.gameObject, flexibleWidth: 9999, minHeight: 25, flexibleHeight: 0);
-        Text nameLabel = NameButton.Component.GetComponentInChildren<Text>();
-        nameLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
-        nameLabel.alignment = TextAnchor.MiddleLeft;
+        NameButton.ButtonTMPText.overflowMode = TMPro.TextOverflowModes.Overflow;
+        NameButton.ButtonTMPText.alignment = TMPro.TextAlignmentOptions.Left;
 
         // Sibling index input
 

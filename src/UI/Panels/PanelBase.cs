@@ -151,7 +151,7 @@ public abstract class PanelBase : UIBehaviourModel
         GameObject closeHolder = UIFactory.CreateUIObject("CloseHolder", TitleBar);
         UIFactory.SetLayoutElement(closeHolder, minHeight: 25, flexibleHeight: 0, minWidth: 30, flexibleWidth: 9999);
         UIFactory.SetLayoutGroup<HorizontalLayoutGroup>(closeHolder, false, false, true, true, 3, childAlignment: TextAnchor.MiddleRight);
-        ButtonRef closeBtn = UIFactory.CreateButton(closeHolder, "CloseButton", "—");
+        ButtonRef closeBtn = UIFactory.CreateTMPButton(closeHolder, "CloseButton", "—");
         UIFactory.SetLayoutElement(closeBtn.Component.gameObject, minHeight: 25, minWidth: 25, flexibleWidth: 0);
         RuntimeHelper.SetColorBlock(closeBtn.Component, new Color(0.33f, 0.32f, 0.31f));
 

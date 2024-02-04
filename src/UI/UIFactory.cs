@@ -328,6 +328,13 @@ public static class UIFactory
         return buttonRef;
     }
 
+    public static ButtonRef CreateTMPButton(GameObject parent, string name, string text, Color? normalColor = null) {
+      normalColor ??= new Color(0.25f, 0.25f, 0.25f);
+      ButtonRef buttonRef = CreateButton(parent, name, text, default, true);
+      RuntimeHelper.Instance.Internal_SetColorBlock(buttonRef.Component, normalColor, normalColor * 1.2f, normalColor * 0.7f);
+      return buttonRef;
+    }
+
     /// <summary>
     /// Create a ButtonRef wrapper and a Button component.
     /// </summary>
@@ -336,35 +343,44 @@ public static class UIFactory
     /// <param name="text">The default button text</param>
     /// <param name="colors">The ColorBlock used for your Button component</param>
     /// <returns>A ButtonRef wrapper for your Button component.</returns>
-    public static ButtonRef CreateButton(GameObject parent, string name, string text, ColorBlock colors)
-    {
-        GameObject buttonObj = CreateUIObject(name, parent, smallElementSize);
+    public static ButtonRef CreateButton(GameObject parent, string name, string text, ColorBlock colors) {
+      return CreateButton(parent, name, text, colors, useTextMeshPro: false);
+    }
 
-        GameObject textObj = CreateUIObject("Text", buttonObj);
+    public static ButtonRef CreateButton(GameObject parent, string name, string text, ColorBlock colors, bool useTextMeshPro) {
+      GameObject buttonObj = CreateUIObject(name, parent, smallElementSize);
+      GameObject textObj = CreateUIObject("Text", buttonObj);
 
-        Image image = buttonObj.AddComponent<Image>();
-        image.type = Image.Type.Sliced;
-        image.color = new Color(1, 1, 1, 1);
+      Image image = buttonObj.AddComponent<Image>();
+      image.type = Image.Type.Sliced;
+      image.color = new Color(1, 1, 1, 1);
 
-        Button button = buttonObj.AddComponent<Button>();
-        SetDefaultSelectableValues(button);
+      Button button = buttonObj.AddComponent<Button>();
+      SetDefaultSelectableValues(button);
 
-        colors.colorMultiplier = 1;
-        RuntimeHelper.Instance.Internal_SetColorBlock(button, colors);
+      colors.colorMultiplier = 1;
+      RuntimeHelper.Instance.Internal_SetColorBlock(button, colors);
 
+      if (useTextMeshPro) {
+        TMP_Text textComp = textObj.AddComponent<TextMeshProUGUI>();
+        textComp.text = text;
+        SetDefaultTMPTextValues(textComp);
+        textComp.alignment = TextAlignmentOptions.Center;
+      } else {
         Text textComp = textObj.AddComponent<Text>();
         textComp.text = text;
         SetDefaultTextValues(textComp);
         textComp.alignment = TextAnchor.MiddleCenter;
+      }
 
-        RectTransform rect = textObj.GetComponent<RectTransform>();
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.sizeDelta = Vector2.zero;
+      RectTransform rect = textObj.GetComponent<RectTransform>();
+      rect.anchorMin = Vector2.zero;
+      rect.anchorMax = Vector2.one;
+      rect.sizeDelta = Vector2.zero;
 
-        SetButtonDeselectListener(button);
+      SetButtonDeselectListener(button);
 
-        return new ButtonRef(button);
+      return new ButtonRef(button);
     }
         
     // Automatically deselect buttons when clicked.
@@ -790,7 +806,6 @@ public static class UIFactory
         viewportRect.pivot = new Vector2(0.0f, 1.0f);
         viewportRect.sizeDelta = new Vector2(0f, 0.0f);
         viewportRect.offsetMax = new Vector2(-10.0f, 0.0f);
-        viewportObj.AddComponent<RectMask2D>();
         viewportObj.AddComponent<Image>().color = new(0.1f, 0.1f, 0.1f, 1);
         viewportObj.AddComponent<RectMask2D>();
 
