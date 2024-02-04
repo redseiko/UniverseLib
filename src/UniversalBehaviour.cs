@@ -1,63 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace UniverseLib;
+
 using UnityEngine;
 
 #if IL2CPP
 using Il2CppInterop.Runtime.Injection;
 #endif
 
-namespace UniverseLib
+/// <summary>
+/// Used for receiving Update events and starting Coroutines.
+/// </summary>
+internal class UniversalBehaviour : MonoBehaviour
 {
-    /// <summary>
-    /// Used for receiving Update events and starting Coroutines.
-    /// </summary>
-    internal class UniversalBehaviour : MonoBehaviour
+    internal static UniversalBehaviour Instance { get; private set; }
+
+    internal static void Setup()
     {
-        internal static UniversalBehaviour Instance { get; private set; }
-
-        internal static void Setup()
-        {
 #if IL2CPP
-            ClassInjector.RegisterTypeInIl2Cpp<UniversalBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<UniversalBehaviour>();
 #endif
 
-            GameObject obj = new("UniverseLibBehaviour");
-            GameObject.DontDestroyOnLoad(obj);
-            obj.hideFlags |= HideFlags.HideAndDontSave;
-            Instance = obj.AddComponent<UniversalBehaviour>();
-        }
-
-        internal void Update()
-        {
-            Universe.Update();
-        }
-
-#if IL2CPP
-        public UniversalBehaviour(IntPtr ptr) : base(ptr) { }
-
-        static Delegate queuedDelegate;
-
-        internal static void InvokeDelegate(Delegate method)
-        {
-            queuedDelegate = method;
-            Instance.Invoke(nameof(InvokeQueuedAction), 0f);
-        }
-
-        void InvokeQueuedAction()
-        {
-            try
-            {
-                Delegate method = queuedDelegate;
-                queuedDelegate = null;
-                method?.DynamicInvoke();
-            }
-            catch (Exception ex)
-            {
-                Universe.LogWarning($"Exception invoking action from IL2CPP thread: {ex}");
-            }
-        }
-#endif
+        GameObject obj = new("UniverseLibBehaviour");
+        DontDestroyOnLoad(obj);
+        obj.hideFlags |= HideFlags.HideAndDontSave;
+        Instance = obj.AddComponent<UniversalBehaviour>();
     }
+
+    internal void Update()
+    {
+        Universe.Update();
+    }
+
+#if IL2CPP
+    public UniversalBehaviour(IntPtr ptr) : base(ptr) { }
+
+    static Delegate queuedDelegate;
+
+    internal static void InvokeDelegate(Delegate method)
+    {
+        queuedDelegate = method;
+        Instance.Invoke(nameof(InvokeQueuedAction), 0f);
+    }
+
+    void InvokeQueuedAction()
+    {
+        try
+        {
+            Delegate method = queuedDelegate;
+            queuedDelegate = null;
+            method?.DynamicInvoke();
+        }
+        catch (Exception ex)
+        {
+            Universe.LogWarning($"Exception invoking action from IL2CPP thread: {ex}");
+        }
+    }
+#endif
 }
