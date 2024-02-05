@@ -696,7 +696,7 @@ namespace UniverseLib.UI.Widgets.ScrollView
             if (TotalDataHeight > 0f)
             {
                 float topPos = 0f;
-                if (HeightCache.Count > 0)
+                if (HeightCache.Count > 0 && TopDataIndex < HeightCache.Count)
                     topPos = HeightCache[TopDataIndex].startPosition;
 
                 float scrollPos = topPos + Content.anchoredPosition.y;

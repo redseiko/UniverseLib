@@ -32,7 +32,7 @@ public static class UIFactory
         //    Universe.Log(Environment.StackTrace);
         //}
 
-        GameObject obj = new(name)
+        GameObject obj = new(name, typeof(RectTransform))
         {
             layer = 5,
             hideFlags = HideFlags.HideAndDontSave,
@@ -41,7 +41,7 @@ public static class UIFactory
         if (parent)
             obj.transform.SetParent(parent.transform, false);
 
-        RectTransform rect = obj.AddComponent<RectTransform>();
+        RectTransform rect = obj.GetComponent<RectTransform>();
         rect.sizeDelta = sizeDelta;
         return obj;
     }
@@ -622,6 +622,77 @@ public static class UIFactory
         return new InputFieldRef(inputField);
     }
 
+    public static TMPInputFieldRef CreateTMPInputField(GameObject parent, string name, string placeHolderText) {
+      GameObject mainObj = CreateUIObject(name, parent);
+
+      Image mainImage = mainObj.AddComponent<Image>();
+      mainImage.type = Image.Type.Sliced;
+      mainImage.color = new Color(0, 0, 0, 0.5f);
+
+      TMP_InputField inputField = mainObj.AddComponent<TMP_InputField>();
+      Navigation nav = inputField.navigation;
+      nav.mode = Navigation.Mode.None;
+      inputField.navigation = nav;
+      inputField.lineType = TMP_InputField.LineType.SingleLine;
+      inputField.interactable = true;
+      inputField.transition = Selectable.Transition.ColorTint;
+      inputField.targetGraphic = mainImage;
+
+      RuntimeHelper.Instance.Internal_SetColorBlock(
+          inputField,
+          new Color(1, 1, 1, 1),
+          new Color(0.95f, 0.95f, 0.95f, 1.0f),
+          new Color(0.78f, 0.78f, 0.78f, 1.0f));
+
+      GameObject textArea = CreateUIObject("TextArea", mainObj);
+      textArea.AddComponent<RectMask2D>();
+
+      RectTransform textAreaRect = textArea.GetComponent<RectTransform>();
+      textAreaRect.anchorMin = Vector2.zero;
+      textAreaRect.anchorMax = Vector2.one;
+      textAreaRect.offsetMin = Vector2.zero;
+      textAreaRect.offsetMax = Vector2.zero;
+
+      inputField.textViewport = textAreaRect;
+
+      GameObject placeHolderObj = CreateUIObject("Placeholder", textArea);
+      TMP_Text placeholderText = placeHolderObj.AddComponent<TextMeshProUGUI>();
+      SetDefaultTMPTextValues(placeholderText);
+      placeholderText.text = placeHolderText ?? "...";
+      placeholderText.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+      placeholderText.textWrappingMode = TextWrappingModes.Normal;
+      placeholderText.alignment = TextAlignmentOptions.Left;
+      placeholderText.fontSize = 14f;
+
+      RectTransform placeHolderRect = placeHolderObj.GetComponent<RectTransform>();
+      placeHolderRect.anchorMin = Vector2.zero;
+      placeHolderRect.anchorMax = Vector2.one;
+      placeHolderRect.sizeDelta = Vector2.zero;
+      placeHolderRect.anchoredPosition = Vector2.zero;
+
+      inputField.placeholder = placeholderText;
+
+      GameObject inputTextObj = CreateUIObject("Text", textArea);
+      TMP_Text inputText = inputTextObj.AddComponent<TextMeshProUGUI>();
+      SetDefaultTMPTextValues(inputText);
+      inputText.text = string.Empty;
+      inputText.color = Color.white;
+      inputText.textWrappingMode = TextWrappingModes.Normal;
+      inputText.alignment = TextAlignmentOptions.Left;
+      inputText.fontSize = 14f;
+
+      RectTransform inputTextRect = inputTextObj.GetComponent<RectTransform>();
+      inputTextRect.anchorMin = Vector2.zero;
+      inputTextRect.anchorMax = Vector2.one;
+      inputTextRect.offsetMin = Vector2.zero;
+      inputTextRect.offsetMax = Vector2.zero;
+
+      inputField.textComponent = inputText;
+      inputField.characterLimit = UniversalUI.MAX_INPUTFIELD_CHARS;
+
+      return new TMPInputFieldRef(inputField);
+    }
+
     /// <summary>
     /// Create a standard DropDown control.
     /// </summary>
@@ -1038,9 +1109,9 @@ public static class UIFactory
         textComp.horizontalOverflow = HorizontalWrapMode.Wrap;
         inputField.Component.lineType = InputField.LineType.MultiLineNewline;
         inputField.Component.targetGraphic.color = color;
-        inputField.PlaceholderText.alignment = TextAnchor.UpperLeft;
-        inputField.PlaceholderText.fontSize = fontSize;
-        inputField.PlaceholderText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        inputField.Placeholder.alignment = TextAnchor.UpperLeft;
+        inputField.Placeholder.fontSize = fontSize;
+        inputField.Placeholder.horizontalOverflow = HorizontalWrapMode.Wrap;
 
         //var content = CreateInputField(viewportObj, name, placeHolderText ?? "...", out InputField inputField, fontSize, 0);
         SetLayoutElement(content, flexibleHeight: 9999, flexibleWidth: 9999);

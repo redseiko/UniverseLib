@@ -149,6 +149,7 @@ public static class UniversalUI
         InputManager.Update();
 
         InputFieldRef.UpdateInstances();
+        TMPInputFieldRef.UpdateInstances();
         UIBehaviourModel.UpdateInstances();
 
         // Update registered UIs
